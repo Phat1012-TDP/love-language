@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lời Tỏ Tình</title>
+    <style>
+        /* Nền lãng mạn với gradient và hình ảnh nền */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, rgba(255, 175, 189, 0.8), rgba(255, 195, 160, 0.8)), 
+                        url('https://source.unsplash.com/1600x900/?romantic,flowers');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+            overflow: hidden; /* Để khung không bị tràn ra ngoài */
+            animation: moveBackground 10s linear infinite; /* Thêm hiệu ứng chuyển động cho nền */
+        }
+
+        /* Hiệu ứng chuyển động cho nền */
+        @keyframes moveBackground {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* Khung chứa */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        /* Định dạng tiêu đề */
+        h1 {
+            font-size: 28px;
+            color: #ff6699;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Định dạng cho nút */
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 15px;
+            font-size: 18px;
+            color: #ffffff;
+            background-color: #ff6699;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        /* Hiệu ứng hover cho nút "Có" */
+        .button-yes:hover {
+            background-color: #ff3366;
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Nút "Không" không có hiệu ứng hover */
+        .button-no {
+            position: relative; /* Vị trí tương đối cho nút "Không" */
+        }
+
+        /* Thông báo */
+        .message-container {
+            display: none; /* Ẩn thông báo ban đầu */
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 10; /* Để hiển thị trên các phần khác */
+        }
+
+        /* Định dạng cho thông báo */
+        .message {
+            font-size: 24px;
+            color: #ff6699;
+            text-align: center;
+        }
+
+        /* Hiệu ứng pháo hoa */
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Không cho phép tương tác với hiệu ứng */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="container">
+        <h1 id="question">Em đồng ý làm người yêu anh nha?</h1>
+        <a href="#" class="button button-yes" onclick="showYesMessage(); playYesSound()">Có</a>
+        <a href="#" class="button button-no" onclick="changeQuestion(); playNoSound()">Không</a>
+    </div>
+
+    <div id="messageContainer" class="message-container">
+        <div class="message">Chờ tuyệt vời, anh iuuu em nhất!</div>
+    </div>
+
+    <canvas id="fireworks" class="fireworks"></canvas>
+
+    <!-- Thêm âm thanh -->
+    <audio id="yesSound" src="yes-sound.mp3"></audio>
+    <audio id="noSound" src="no-sound.mp3"></audio>
+
+    <script>
+        // Danh sách câu hỏi ngẫu nhiên
+        const questions = [
+            "Vậy em làm bạn gái anh nhé?",
+            "Thật không? Em nghĩ lại xem nào!",
+            "Suy nghĩ kỹ chưa, em đồng ý đi mà?",
+            "Anh biết em muốn mà, đồng ý nha!",
+            "Chắc em thích anh rồi phải không?",
+            "Cơ hội có một không hai, đồng ý đi!"
+        ];
+
+        // Thay đổi câu hỏi và vị trí của khung khi nhấn "Không"
+        function changeQuestion() {
+            const questionElement = document.getElementById('question');
+            const container = document.getElementById('container');
+
+            // Chọn câu hỏi ngẫu nhiên
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            questionElement.innerText = randomQuestion;
+
+            // Di chuyển khung chứa đến vị trí ngẫu nhiên trong trang
+            const randomTop = Math.floor(Math.random() * 70); // Giá trị top ngẫu nhiên từ 0 đến 70%
+            const randomLeft = Math.floor(Math.random() * 70); // Giá trị left ngẫu nhiên từ 0 đến 70%
+            container.style.position = 'absolute'; // Đặt vị trí của khung chứa là tuyệt đối
+            container.style.top = randomTop + '%';
+            container.style.left = randomLeft + '%';
+        }
+
+        // Hiển thị thông báo khi chọn "Có"
+        function showYesMessage() {
+            document.getElementById('container').style.display = 'none'; // Ẩn khung câu hỏi
+            document.getElementById('messageContainer').style.display = 'block'; // Hiển thị thông báo
+            createFireworks(); // Tạo hiệu ứng pháo hoa
+        }
+
+        // Phát âm thanh "Có"
+        function playYesSound() {
+            const sound = document.getElementById('yesSound');
+            sound.play().catch(console.error);
+        }
+
+        // Phát âm thanh "Không"
+        function playNoSound() {
+            const sound = document.getElementById('noSound');
+            sound.play().catch(console.error);
+        }
+
+        // Hàm tạo hiệu ứng pháo hoa
+        function createFireworks() {
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Hiệu ứng pháo hoa
+            function Firework(x, y) {
+                this.x = x;
+                this.y = y;
+                this.hue = Math.random() * 360;
+                this.particles = [];
+
+                for (let i = 0; i < 100; i++) {
+                    this.particles.push(new Particle(this.x, this.y, this.hue));
+                }
+            }
+
+            function Particle(x, y, hue) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 4 + 1;
+                this.speedX = (Math.random() - 0.5) * 6;
+                this.speedY = (Math.random() - 0.5) * 6;
+                this.hue = hue;
+                this.alpha = 1;
+            }
+
+            Particle.prototype.update = function () {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.alpha -= 0.02;
+            };
+
+            Particle.prototype.draw = function () {
+                ctx.fillStyle = 'hsl(' + this.hue + ', 100%, 50%, ' + this.alpha + ')';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            };
+
+            function animateFireworks() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let firework of fireworks) {
+                    for (let particle of firework.particles) {
+                        particle.update();
+                        particle.draw();
+                    }
+                }
+                requestAnimationFrame(animateFireworks);
+            }
+
+            let fireworks = [];
+            setInterval(function () {
+                fireworks.push(new Firework(Math.random() * canvas.width, Math.random() * canvas.height));
+            }, 1000);
+
+            animateFireworks();
+        }
+    </script>
+</body>
+</html>
